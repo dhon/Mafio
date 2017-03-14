@@ -1,0 +1,17 @@
+{
+  "name": "mafio",
+  "version": "1.0.0",
+  "description": "description",
+  "main": "app.js",
+  "dependencies": {
+    "express": "~4.14.1"
+  },
+  "scripts": {
+    "start": "node js/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git"
+  },
+  "license": "ISC"
+}
