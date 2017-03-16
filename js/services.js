@@ -32,7 +32,7 @@ angular.module('app.services', [])
         resetVote();
         resetFormal();
         resetMessage();
-    }
+    };
 
     function resetName(){
         players[0].name = 'YOU';
