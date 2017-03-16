@@ -2,13 +2,13 @@ angular.module('app.services', [])
 .factory('services', [function(){
 
     var players = [
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, message:""}
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
+        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""}
     ];
 
     // Fisher–Yates shuffle
@@ -23,7 +23,18 @@ angular.module('app.services', [])
         return array;
     };
 
-    function setNames(){
+    function resetGame(){
+        resetName();
+        resetRole();
+        resetButton();
+        resetStatus();
+        resetSaved();
+        resetVote();
+        resetFormal();
+        resetMessage();
+    }
+
+    function resetName(){
         players[0].name = 'YOU';
         players[1].name = 'Joey';
         players[2].name = 'Pope';
@@ -33,7 +44,7 @@ angular.module('app.services', [])
         players[6].name = 'Trump';
     };
 
-    function setRoles(){
+    function resetRole(){
         var nums = [0, 1, 2, 3, 4, 5, 6];
         shuffle(nums);
         players[nums[0]].role = 'Cop';
@@ -45,7 +56,7 @@ angular.module('app.services', [])
         players[nums[6]].role = 'Mafia';
     };
 
-    function setButtons(){
+    function resetButton(){
         players[0].button = 'YOU';
         players[1].button = 'Joey';
         players[2].button = 'Pope';
@@ -55,22 +66,27 @@ angular.module('app.services', [])
         players[6].button = 'Trump';
     };
 
-    function setStatus(){
+    function resetStatus(){
         for(var i = 0; i < 7; i++)
             players[i].status = true;
     };
 
-    function setSaved(){
+    function resetSaved(){
         for(var i = 0; i < 7; i++)
             players[i].saved = false;
     };
 
-    function setVotes(){
+    function resetVote(){
         for(var i = 0; i < 7; i++)
             players[i].vote = false;
     };
 
-    function setMessages() {
+    function resetFormal(){
+        for(var i = 0; i < 7; i++)
+            players[i].formal = false;
+    };
+
+    function resetMessage() {
         var a = null;
         var b = null;
         for(var i = 0; i < 7; i++){
@@ -85,14 +101,15 @@ angular.module('app.services', [])
         players[b].message += ' with ' + players[a].name;
     };
 
-    function action(){
+    // Create RNG Actions Here
+    function action(index){
         if(players[0].role == 'Cop')
-            return 'check';
+            check(index);
         if(players[0].role == 'Medic')
-            return 'save';
+            save(index);
         if(players[0].role == 'Mafia')
-            return 'kill';
-    }
+            kill(index);
+    };
 
     function check(index){
         if(index == 7)
@@ -104,7 +121,7 @@ angular.module('app.services', [])
     };
 
     function save(index){
-        setSaved();
+        resetSaved();
         if(index == 7)
             return;
         players[index].saved == true;
@@ -120,16 +137,57 @@ angular.module('app.services', [])
     };
 
     function nominate(index){
+        resetFormal();
         if(index == 7)
             return 7;
         else if(players[index].status == true)
+            players[index].formal = true;
             return index;
-        else
-            return 10;
     };
 
-    function getPlayer(index){
-        return players[index];
+    function vote(bool){
+        players[0].vote = bool;
+        for(var i = 1; i < 7; i++){
+            var array = [true, true, true, false, false];
+            array = shuffle(array);
+            players[i].vote = array[0];
+        }
+        var pf = passFail();
+        if(pf == true)
+            voteKill();
+    };
+
+    function voteKill(){
+        var i = getFormalID();
+        players[i].status = false;
+        players[i].button += ' is a dead ' + players[i].role;
+    };
+
+    function passFail(){
+        var alive = 0;
+        var vote = 0;
+        for(var i = 0; i < 7; i++){
+            if(players[i].status == true){
+                alive++;
+                if(players[i].vote == true)
+                    vote++;
+            }
+        }
+        if(vote*2 > alive)
+            return true;
+        return false;
+    };
+
+    function getFormalID(){
+        for(var i = 0; i < 7; i++)
+            if(players[i].formal == true)
+                return i;
+    };
+
+    function getFormalName(){
+        for(var i = 0; i < 7; i++)
+            if(players[i].formal == true)
+                return players[i].name;
     };
 
     function getPlayers(){
@@ -137,8 +195,7 @@ angular.module('app.services', [])
     };
 
     return{
-        shuffle, setNames, setRoles, setButtons, setStatus, setSaved, setVotes, setMessages,
-        action, check, save, kill, nominate, getPlayer, getPlayers
+        resetGame, action, nominate, vote, passFail, getFormalName, getPlayers
     };
 
 }]);
