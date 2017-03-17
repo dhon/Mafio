@@ -4,9 +4,22 @@ angular.module("app.controllers", [])
     services.resetGame();
 })
 
+.controller("nightCtrl", function($scope, $location, services) {
+    console.log("Night Controller is Working!");
+    $scope.players = services.getPlayers();
+    if(services.isGameOver() != 0)
+        $location.path('/results');
+    $scope.action = function(index){
+        services.action(index)
+        $location.path('/day');
+    };
+})
+
 .controller("dayCtrl", function($scope, $location, services) {
     console.log("Day Controller is Working!");
     $scope.players = services.getPlayers();
+    if(services.isGameOver() != 0)
+        $location.path('/results');
     $scope.nominate = function(index){
         var nom = services.nominate(index);
         if(nom == 7)
@@ -16,21 +29,12 @@ angular.module("app.controllers", [])
     };
 })
 
-.controller("nightCtrl", function($scope, $location, services) {
-    console.log("Night Controller is Working!");
-    $scope.players = services.getPlayers();
-    $scope.action = function(index){
-        services.action(index)
-        $location.path('/day');
-    };
-})
-
 .controller("voteCtrl", function($scope, $location, services) {
     console.log("Vote Controller is Working!");
     $scope.players = services.getPlayers();
     $scope.formal = services.getFormalName();
-    $scope.vote = function(bool){
-        services.vote(bool);
+    $scope.vote = function(ynd){
+        services.vote(ynd);
         $location.path('/log');
     };
 })
@@ -39,9 +43,9 @@ angular.module("app.controllers", [])
     console.log("Log Controller is Working!");
     $scope.players = services.getPlayers();
     $scope.formal = services.getFormalName();
+    $scope.voteResult = services.passFail();
     $scope.passFail = function(){
-        var pf = services.passFail();
-        if(pf == true)
+        if($scope.voteResult == 'Passed')
             $location.path('/night');
         else
             $location.path('/day');
@@ -51,4 +55,5 @@ angular.module("app.controllers", [])
 .controller("resultsCtrl", function($scope, $location, services) {
     console.log("Results Controller is Working!");
     $scope.players = services.getPlayers();
+    $scope.team = services.isGameOver()
 });

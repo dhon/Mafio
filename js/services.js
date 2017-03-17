@@ -2,13 +2,13 @@ angular.module('app.services', [])
 .factory('services', [function(){
 
     var players = [
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""},
-        {name:"", role:"", button:"", status:true, saved:false, vote:false, formal:false, message:""}
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""},
+        {name:"", role:"", button:"", status:true, saved:false, checked:false, formal:false, vote:"", message:""}
     ];
 
     // Fisher–Yates shuffle
@@ -29,6 +29,7 @@ angular.module('app.services', [])
         resetButton();
         resetStatus();
         resetSaved();
+        resetChecked();
         resetVote();
         resetFormal();
         resetMessage();
@@ -45,15 +46,15 @@ angular.module('app.services', [])
     };
 
     function resetRole(){
-        var nums = [0, 1, 2, 3, 4, 5, 6];
-        shuffle(nums);
-        players[nums[0]].role = 'Cop';
-        players[nums[1]].role = 'Medic';
-        players[nums[2]].role = 'Vanilla';
-        players[nums[3]].role = 'Vanilla';
-        players[nums[4]].role = 'Vanilla';
-        players[nums[5]].role = 'Mafia';
-        players[nums[6]].role = 'Mafia';
+        var array = [0, 1, 2, 3, 4, 5, 6];
+        shuffle(array);
+        players[array[0]].role = 'Cop';
+        players[array[1]].role = 'Medic';
+        players[array[2]].role = 'Vanilla';
+        players[array[3]].role = 'Vanilla';
+        players[array[4]].role = 'Vanilla';
+        players[array[5]].role = 'Mafia';
+        players[array[6]].role = 'Mafia';
     };
 
     function resetButton(){
@@ -76,9 +77,14 @@ angular.module('app.services', [])
             players[i].saved = false;
     };
 
+    function resetChecked(){
+        for(var i = 0; i < 7; i++)
+            players[i].checked = false;
+    };
+
     function resetVote(){
         for(var i = 0; i < 7; i++)
-            players[i].vote = false;
+            players[i].vote = "";
     };
 
     function resetFormal(){
@@ -86,12 +92,12 @@ angular.module('app.services', [])
             players[i].formal = false;
     };
 
-    function resetMessage() {
+    function resetMessage(){
         var a = null;
         var b = null;
         for(var i = 0; i < 7; i++){
             players[i].message = 'You are ' + players[i].role;
-            if (players[i].role == 'Mafia')
+            if(players[i].role == 'Mafia')
                 if(a == null)
                     a = i;
                 else
@@ -103,12 +109,66 @@ angular.module('app.services', [])
 
     // Create RNG Actions Here
     function action(index){
-        if(players[0].role == 'Cop')
+        if(players[0].role == 'Cop'){
+            saveRNG();
+            killRNG();
             check(index);
-        if(players[0].role == 'Medic')
+        }else if(players[0].role == 'Medic'){
             save(index);
-        if(players[0].role == 'Mafia')
+            killRNG();
+            checkRNG();
+        }else if(players[0].role == 'Mafia'){
+            saveRNG();
             kill(index);
+            checkRNG();
+        }else{
+            saveRNG();
+            killRNG();
+            checkRNG();
+        }
+    };
+
+    function save(index){
+        if(index == 7)
+            return;
+        players[index].saved = true;
+    };
+
+    function saveRNG(){
+        var array = [];
+        for(var i = 1; i < 7; i++)
+            if(players[i].role == 'Medic' && players[i].status){
+                for(var j = 0; j < 7; j++)
+                    if(i != j && players[j].status)
+                        array.push(j);
+                shuffle(array);
+                players[array[0]].saved = true;
+                save(array[0]);
+            }
+    };
+
+    function kill(index){
+        if(index == 7)
+            return;
+        if(players[index].saved == false){
+            players[index].status = false;
+            players[index].vote = 'DEAD';
+            players[index].button += ' is a dead ' + players[index].role + '.'
+        }
+        resetSaved();
+    };
+
+    function killRNG(){
+        var array = [];
+        for(var i = 1; i < 7; i++)
+            if(players[i].role == 'Mafia' && players[i].status){
+                for(var j = 1; j < 7; j++)
+                    if(players[j].role != 'Mafia' && players[j].status)
+                        array.push(j);
+                shuffle(array);
+                kill(array[0]);
+                break;
+            }
     };
 
     function check(index){
@@ -118,75 +178,90 @@ angular.module('app.services', [])
         if(players[index].role == 'Mafia')
             team = 'mafia';
         players[0].message += ', ' + players[index].name + ' is ' + team;
+        players[index].checked = true;
     };
 
-    function save(index){
-        resetSaved();
-        if(index == 7)
-            return;
-        players[index].saved == true;
-    };
-
-    function kill(index){
-        if(index == 7)
-            return;
-        if(players[index].saved == false){
-            players[index].status = false;
-            players[index].button += ' is a dead ' + players[index].role + '.'
-        }
+    function checkRNG(){
+        var array = [];
+        for(var i = 1; i < 7; i++)
+            if(players[i].role == 'Cop' && players[i].status){
+                for(var j = 0; j < 7; j++)
+                    if(i != j && players[j].checked == false && players[j].status)
+                        array.push(j);
+                if(array.length > 0){
+                    shuffle(array);
+                    check(array[0]);
+                }
+            }
     };
 
     function nominate(index){
         resetFormal();
         if(index == 7)
             return 7;
-        else if(players[index].status == true)
+        else if(players[index].status)
             players[index].formal = true;
             return index;
     };
 
-    function vote(bool){
-        players[0].vote = bool;
-        for(var i = 1; i < 7; i++){
-            var array = [true, true, true, false, false];
-            array = shuffle(array);
-            players[i].vote = array[0];
-        }
-        var pf = passFail();
-        if(pf == true)
+    function vote(ynd){
+        players[0].vote = ynd;
+        for(var i = 1; i < 7; i++)
+            if(players[i].status){
+                var array = ['Yes', 'Yes', 'Yes', 'No', 'No'];
+                shuffle(array);
+                players[i].vote = array[0];
+            }
+        if(passFail() == 'Passed')
             voteKill();
     };
 
     function voteKill(){
         var i = getFormalID();
         players[i].status = false;
+        players[i].vote = 'DEAD';
         players[i].button += ' is a dead ' + players[i].role;
     };
 
     function passFail(){
         var alive = 0;
         var vote = 0;
-        for(var i = 0; i < 7; i++){
-            if(players[i].status == true){
+        for(var i = 0; i < 7; i++)
+            if(players[i].status){
                 alive++;
-                if(players[i].vote == true)
+                if(players[i].vote == 'Yes')
                     vote++;
             }
-        }
         if(vote*2 > alive)
-            return true;
-        return false;
+            return 'Passed';
+        return 'Failed';
+    };
+
+    function isGameOver(){
+        var mafia = 0;
+        var town = 0;
+        for(var i = 0; i < 7; i++)
+            if(players[i].status)
+                if(players[i].role == 'Mafia')
+                    mafia++;
+                else
+                    town++;
+        if(mafia == 0)
+            return 'Town';
+        if(mafia == town)
+            return 'Mafia';
+        return 0;
     };
 
     function getFormalID(){
         for(var i = 0; i < 7; i++)
-            if(players[i].formal == true)
+            if(players[i].formal)
                 return i;
     };
 
     function getFormalName(){
         for(var i = 0; i < 7; i++)
-            if(players[i].formal == true)
+            if(players[i].formal)
                 return players[i].name;
     };
 
@@ -195,7 +270,7 @@ angular.module('app.services', [])
     };
 
     return{
-        resetGame, action, nominate, vote, passFail, getFormalName, getPlayers
+        resetGame, action, nominate, vote, passFail, isGameOver, getFormalName, getPlayers
     };
 
 }]);
