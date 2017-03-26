@@ -157,7 +157,6 @@ angular.module('app.services', [])
         }
         if(players[index].saved == false){
             players[index].status = false;
-            players[index].vote = 'DEAD';
             players[index].button += ' is a dead ' + players[index].role + '.'
         }
         resetSaved();
@@ -215,7 +214,8 @@ angular.module('app.services', [])
                 var array = ['Yes', 'Yes', 'Yes', 'No', 'No'];
                 shuffle(array);
                 players[i].vote = array[0];
-            }
+            }else
+                players[i].vote = 'DEAD';
         if(passFail() == 'Passed')
             voteKill();
     };
@@ -223,7 +223,6 @@ angular.module('app.services', [])
     function voteKill(){
         var i = getFormalID();
         players[i].status = false;
-        players[i].vote = 'DEAD';
         players[i].button += ' is a dead ' + players[i].role;
     };
 
