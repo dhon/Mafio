@@ -107,17 +107,20 @@ angular.module('app.services', [])
         players[b].message += ' with ' + players[a].name;
     };
 
-    // Create RNG Actions Here
     function action(index){
+        if(index != 7 && !players[index].status) return false;
         if(players[0].role == 'Cop'){
+            if(index == 0 || index == 7 || players[index].checked) return false;
             saveRNG();
             killRNG();
             check(index);
         }else if(players[0].role == 'Medic'){
+            if(index == 0) return false;
             save(index);
             killRNG();
             checkRNG();
         }else if(players[0].role == 'Mafia'){
+            if(index != 7 && players[index].role == 'Mafia') return false;
             saveRNG();
             kill(index);
             checkRNG();
@@ -126,11 +129,11 @@ angular.module('app.services', [])
             killRNG();
             checkRNG();
         }
+        return true;
     };
 
     function save(index){
-        if(index == 7)
-            return;
+        if(index == 7) return;
         players[index].saved = true;
     };
 
@@ -148,8 +151,10 @@ angular.module('app.services', [])
     };
 
     function kill(index){
-        if(index == 7)
+        if(index == 7){
+            resetSaved();
             return;
+        }
         if(players[index].saved == false){
             players[index].status = false;
             players[index].vote = 'DEAD';
@@ -172,8 +177,6 @@ angular.module('app.services', [])
     };
 
     function check(index){
-        if(index == 7)
-            return;
         var team = 'town';
         if(players[index].role == 'Mafia')
             team = 'mafia';
@@ -199,9 +202,10 @@ angular.module('app.services', [])
         resetFormal();
         if(index == 7)
             return 7;
-        else if(players[index].status)
+        else if(players[index].status){
             players[index].formal = true;
             return index;
+        }
     };
 
     function vote(ynd){

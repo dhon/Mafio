@@ -3,19 +3,14 @@ This is a small program for the party game Mafia.
 It is very simple to run, npm install & npm start in root folder.
 The application is hosted on localhost:3000 in your web browser.
 Do not use the Nav Bar if playing game, it was for testing purposes.
-
-ABOUT
 It is basically the same as my other mafia application except more bare-bones using only Node, Express, and Angular.
-There is also no safe-guards to prevent the user from picking invalid options.
-Picking an invalid option will likely break the application.
-These safeguards exist for the AI players however.
-It would not take long to add these safeguards, but since Mafia is a SOCIAL game, and this is a single player application, I have lost my desire to work on it.
 
 GAME
 The objective of the game is simple: The Mafia try to kill the Town, and the Town try to kill the Mafia.
 I hard-coded the player to be unable to die unless they start a vote on themselves.
+If the user kills themselves this way the game will not function correctly.
 This means it is impossible for the player to lose as Mafia, and less likely as Town.
-Which is very stupid game design, one reason why I'm done playing with this application.
+Which is very stupid game design, but RNG dying is probably worse.
 
 SETUP
 The game has 1 cop, 1 medic, 3 vanilla, and 2 mafia.

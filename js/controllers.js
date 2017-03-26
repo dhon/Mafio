@@ -10,8 +10,8 @@ angular.module("app.controllers", [])
     if(services.isGameOver() != 0)
         $location.path('/results');
     $scope.action = function(index){
-        services.action(index)
-        $location.path('/day');
+        if(services.action(index))
+            $location.path('/day');
     };
 })
 
