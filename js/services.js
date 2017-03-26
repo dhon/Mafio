@@ -110,7 +110,10 @@ angular.module('app.services', [])
     function action(index){
         if(index != 7 && !players[index].status) return false;
         if(players[0].role == 'Cop'){
-            if(index == 0 || index == 7 || players[index].checked) return false;
+            if(index == 0 || index == 7) return false;
+            for(var i = 1; i < 7; i++)
+                if(players[i].status == true && players[i].checked == false)
+                    if(players[index].checked) return false;
             saveRNG();
             killRNG();
             check(index);
