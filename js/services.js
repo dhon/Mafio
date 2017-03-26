@@ -112,7 +112,7 @@ angular.module('app.services', [])
         if(players[0].role == 'Cop'){
             if(index == 0 || index == 7) return false;
             for(var i = 1; i < 7; i++)
-                if(players[i].status == true && players[i].checked == false)
+                if(players[i].status && !players[i].checked)
                     if(players[index].checked) return false;
             saveRNG();
             killRNG();
@@ -158,7 +158,7 @@ angular.module('app.services', [])
             resetSaved();
             return;
         }
-        if(players[index].saved == false){
+        if(!players[index].saved){
             players[index].status = false;
             players[index].button += ' is a dead ' + players[index].role + '.'
         }
@@ -191,7 +191,7 @@ angular.module('app.services', [])
         for(var i = 1; i < 7; i++)
             if(players[i].role == 'Cop' && players[i].status){
                 for(var j = 0; j < 7; j++)
-                    if(i != j && players[j].checked == false && players[j].status)
+                    if(i != j && !players[j].checked && players[j].status)
                         array.push(j);
                 if(array.length > 0){
                     shuffle(array);
