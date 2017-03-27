@@ -22,9 +22,9 @@ angular.module("app.controllers", [])
         $location.path('/results');
     $scope.nominate = function(index){
         var nom = services.nominate(index);
-        if(nom == 7)
+        if(nom == 1)
             $location.path('/night');
-        else if(nom >= 0 && nom <= 6)
+        else if(nom == 2)
             $location.path('/vote');
     };
 })

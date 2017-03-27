@@ -7,10 +7,9 @@ It is basically the same as my other mafia application except more bare-bones us
 
 GAME
 The objective of the game is simple: The Mafia try to kill the Town, and the Town try to kill the Mafia.
-I hard-coded the player to be unable to die unless they start a vote on themselves.
-If the user kills themselves this way the game will not function correctly.
+I hard-coded the player to be unable to die in the night and cannot start a vote on themselves.
 This means it is impossible for the player to lose as Mafia, and less likely as Town.
-Which is very stupid game design, but RNG dying is probably worse.
+This is very stupid game design, but RNG dying is probably worse.
 
 SETUP
 The game has 1 cop, 1 medic, 3 vanilla, and 2 mafia.

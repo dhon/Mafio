@@ -202,11 +202,11 @@ angular.module('app.services', [])
 
     function nominate(index){
         resetFormal();
-        if(index == 7)
-            return 7;
+        if(index == 0) return 0;
+        if(index == 7) return 1;
         else if(players[index].status){
             players[index].formal = true;
-            return index;
+            return 2;
         }
     };
 
@@ -238,8 +238,7 @@ angular.module('app.services', [])
                 if(players[i].vote == 'Yes')
                     vote++;
             }
-        if(vote*2 > alive)
-            return 'Passed';
+        if(vote*2 > alive) return 'Passed';
         return 'Failed';
     };
 
@@ -252,10 +251,8 @@ angular.module('app.services', [])
                     mafia++;
                 else
                     town++;
-        if(mafia == 0)
-            return 'Town';
-        if(mafia == town)
-            return 'Mafia';
+        if(mafia == 0) return 'Town';
+        if(mafia == town) return 'Mafia';
         return 0;
     };
 
